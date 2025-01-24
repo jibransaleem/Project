@@ -10,13 +10,13 @@ import random
 class Auth:
     def __init__(self):
         try:
-            # self.Name()
-            # self.last()
-            # self.dof()
-            # self.ContactNumber()
-            # self.Email()
+            self.Name()
+            self.last()
+            self.dof()
+            self.ContactNumber()
+            self.Email()
             self.Password()
-            # self.fetch_all()
+            self.fetch_all()
         except Exception as e:
             print(e)
     def Name(self):
@@ -37,12 +37,12 @@ class Auth:
             while(re.search(check,self.father).group()==None):
                 self.father: str = input('Enter your father again : ').strip().lower()
     def dof(self):
-        self.dof : str = input('Enter your Date of Birth [year - month -date : ]').strip()
+        self.birth : str = input('Enter your Date of Birth [year - month -date : ]').strip()
         checker= r'^\d{4}.+\d{1,12}.+\d{1,30}$'
-        if re.match(checker , self.dof).group()!=None:
+        if re.match(checker , self.birth).group()!=None:
             pass
         else:
-            while(re.search(checker,self.dof).group()==None):
+            while(re.search(checker,self.birth).group()==None):
                 self.dof : str = input('Enter your Date of Birth [year - month -date : ]').strip()
     def ContactNumber(self):
         self.region : str  = input('Enter you region : ').strip()
@@ -77,48 +77,63 @@ class Auth:
                 
         except requests.exceptions.RequestException as e:
             print(e)
+
     def Password(self):
-        choise : str = input('Enter Y to create your own password else hit any button ! ').strip().lower()
-        if choise!='y':
-            a_z = [chr(i) for i in range(97,123)]
-            A_Z = [chr(i) for i in range(65,91)]
-            spec =list("!#$%&'()*+,-./:;<=>?@[\]^_`{|}~")
+        choice = input('Enter Y to create your own password else hit any button! ').strip().lower()
+
+        if choice != 'y':
+            a_z = [chr(i) for i in range(97, 123)]  # Lowercase letters
+            A_Z = [chr(i) for i in range(65, 91)]   # Uppercase letters
+            spec = list("!#$%&'()*+,-./:;<=>?@[\]^_`{|}~")  # Special characters
             key = []
-            for i in range(1,3):
-                index = random.randint(0,25)
-                key+=(a_z[index])
+
+            # Add random lowercase letters
+            for _ in range(1, 3):
+                index = random.randint(0, 25)
+                key.append(a_z[index])
+            
+            # Add random uppercase letters
+            for _ in range(1, 2):
+                index = random.randint(0, 25)
+                key.append(A_Z[index])
+            
+            # Add random special characters
+            for _ in range(1, 3):
+                index = random.randint(0, len(spec) - 1)
+                key.append(spec[index])
+            
+            # Add random digits
+            for _ in range(random.randint(1, 3)):
+                key.append(str(random.randint(0, 9)))
+
+            # Ensure the password is at least 7 characters
+            if len(key) < 7:
+                for _ in range(7 - len(key)):
+                    index = random.randint(0, 25)
+                    key.append(random.choice(a_z + A_Z + spec))  # Add a mix of chars
+
+            # Shuffle the final password
             random.shuffle(key)
-            for i in range(1,2):
-                index = random.randint(0,25)
-                key+=(A_Z[index])
-            random.shuffle(key)
-            for i in range(1,3):
-                index = random.randint(0,len(spec))
-                key+=(spec[index])
-            random.shuffle(key)
-            for i in range(random.randint(1,3)):
-                key+=(str(random.randint(0,9)))
-            random.shuffle(key)
-            if len(key)<7:
-                for i in range(7-len(key)):
-                    index = random.randint(0,25)
-                    key+=(A_Z[index])
-            random.shuffle(key)
+
+            # Convert list to string
             key = "".join(key)
         else:
-            key = input('Enter password (length should be greater than 6 ) :').strip()
-            while(len(key)<6):
-                key = input('Please enter password according to rule (length should be greater than 6 ) :').strip()
-           
-            self.__hashed = bcrypt.hashpw(key.encode('utf-8') , bcrypt.gensalt())
+            key = input('Enter password (length should be greater than 6): ').strip()
+            while len(key) < 6:
+                key = input('Please enter password according to the rule (length should be greater than 6): ').strip()
+
+        # Hash the password using bcrypt
+        self.__hashed = bcrypt.hashpw(key.encode('utf-8'), bcrypt.gensalt())
+        
+     
             #if bcrypt.checkpw(vld.encode('utf-8'),self.ContactNumber__hashed):
     def fetch_all(self):
             dicts = {
                 'name'  : self.name,
                 'father' : self.father,
-                'Birthday' : self.dof,
+                'Birthday' : self.birth,
                 'email' : self.email,
-                'Contact' : self.ContactNumber,
+                'Contact' : self.number,
                 'Password' : self.__hashed           
             }
             try:
